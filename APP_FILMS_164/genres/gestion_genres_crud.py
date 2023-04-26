@@ -1,7 +1,8 @@
-"""Gestion des "routes" FLASK et des données pour les genres test.
+"""Gestion des "routes" FLASK et des données pour les genres.
 Fichier : gestion_genres_crud.py
 Auteur : OM 2021.03.16
 """
+import datetime
 from pathlib import Path
 
 from flask import redirect
@@ -43,11 +44,11 @@ def genres_afficher(order_by, id_genre_sel):
                     # donc, je précise les champs à afficher
                     # Constitution d'un dictionnaire pour associer l'id du genre sélectionné avec un nom de variable
                     valeur_id_genre_selected_dictionnaire = {"value_id_genre_selected": id_genre_sel}
-                    strsql_genres_afficher = """SELECT * FROM t_produit WHERE id_produit = %(value_id_genre_selected)s"""
+                    strsql_genres_afficher = """SELECT ID_Produit, Nom_Prod, Date  FROM t_produit WHERE ID_Produit = %(value_id_genre_selected)s"""
 
                     mc_afficher.execute(strsql_genres_afficher, valeur_id_genre_selected_dictionnaire)
                 else:
-                    strsql_genres_afficher = """SELECT *  FROM t_produit ORDER BY id_produit DESC"""
+                    strsql_genres_afficher = """SELECT ID_Produit, Nom_Prod, Date  FROM t_produit ORDER BY ID_Produit DESC"""
 
                     mc_afficher.execute(strsql_genres_afficher)
 
@@ -102,11 +103,11 @@ def genres_ajouter_wtf():
         try:
             if form.validate_on_submit():
                 name_genre_wtf = form.nom_genre_wtf.data
-                name_genre = name_genre_wtf.lower()
-                valeurs_insertion_dictionnaire = {"value_intitule_genre": name_genre}
+                name_produit = name_genre_wtf.lower()
+                valeurs_insertion_dictionnaire = {"value_intitule_genre": name_produit}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
-                strsql_insert_genre = """INSERT INTO t_produit (id_produit,intitule_genre) VALUES (NULL,%(value_intitule_genre)s) """
+                strsql_insert_genre = """INSERT INTO t_produit (id_produit,nom_prod) VALUES (NULL,%(value_intitule_genre)s) """
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_genre, valeurs_insertion_dictionnaire)
 
