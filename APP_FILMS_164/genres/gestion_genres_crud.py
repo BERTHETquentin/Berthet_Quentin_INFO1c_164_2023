@@ -1,4 +1,4 @@
-"""Gestion des "routes" FLASK et des données pour les genres.
+"""Gestion des "routes" FLASK et des données pour les genres test.
 Fichier : gestion_genres_crud.py
 Auteur : OM 2021.03.16
 """
