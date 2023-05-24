@@ -56,7 +56,7 @@ def films_genres_afficher(id_film_sel):
                 if not data_genres_films_afficher and id_film_sel == 0:
                     flash("""La table "t_client" est vide. !""", "warning")
                 elif not data_genres_films_afficher and id_film_sel > 0:
-                    # Si l'utilisateur change l'id_film dans l'URL et qu'il ne correspond à aucun film
+                    # Si l'utilisateur change l'Nom_Prod dans l'URL et qu'il ne correspond à aucun film
                     flash(f"Le client {id_film_sel} demandé n'existe pas !!", "warning")
                 else:
                     flash(f"Données films et genres affichés !!", "success")
@@ -91,12 +91,12 @@ def edit_genre_film_selected():
     if request.method == "GET":
         try:
             with DBconnection() as mc_afficher:
-                strsql_genres_afficher = """SELECT id_produit, intitule_genre FROM t_produit ORDER BY id_produit ASC"""
+                strsql_genres_afficher = """SELECT ID_Client, Nom_Client FROM t_client ORDER BY ID_Client ASC"""
                 mc_afficher.execute(strsql_genres_afficher)
             data_genres_all = mc_afficher.fetchall()
             print("dans edit_genre_film_selected ---> data_genres_all", data_genres_all)
 
-            # Récupère la valeur de "id_film" du formulaire html "films_genres_afficher.html"
+            # Récupère la valeur de "Nom_Prod" du formulaire html "films_genres_afficher.html"
             # l'utilisateur clique sur le bouton "Modifier" et on récupère la valeur de "id_film"
             # grâce à la variable "id_film_genres_edit_html" dans le fichier "films_genres_afficher.html"
             # href="{{ url_for('edit_genre_film_selected', id_film_genres_edit_html=row.id_film) }}"
@@ -119,20 +119,20 @@ def edit_genre_film_selected():
                 genres_films_afficher_data(valeur_id_film_selected_dictionnaire)
 
             print(data_genre_film_selected)
-            lst_data_film_selected = [item['id_film'] for item in data_genre_film_selected]
+            lst_data_film_selected = [item['ID_Client'] for item in data_genre_film_selected]
             print("lst_data_film_selected  ", lst_data_film_selected,
                   type(lst_data_film_selected))
 
             # Dans le composant "tags-selector-tagselect" on doit connaître
             # les genres qui ne sont pas encore sélectionnés.
-            lst_data_genres_films_non_attribues = [item['id_produit'] for item in data_genres_films_non_attribues]
+            lst_data_genres_films_non_attribues = [item['ID_Produit'] for item in data_genres_films_non_attribues]
             session['session_lst_data_genres_films_non_attribues'] = lst_data_genres_films_non_attribues
             print("lst_data_genres_films_non_attribues  ", lst_data_genres_films_non_attribues,
                   type(lst_data_genres_films_non_attribues))
 
             # Dans le composant "tags-selector-tagselect" on doit connaître
             # les genres qui sont déjà sélectionnés.
-            lst_data_genres_films_old_attribues = [item['id_produit'] for item in data_genres_films_attribues]
+            lst_data_genres_films_old_attribues = [item['ID_Produit'] for item in data_genres_films_attribues]
             session['session_lst_data_genres_films_old_attribues'] = lst_data_genres_films_old_attribues
             print("lst_data_genres_films_old_attribues  ", lst_data_genres_films_old_attribues,
                   type(lst_data_genres_films_old_attribues))
@@ -143,9 +143,9 @@ def edit_genre_film_selected():
             print(" data_genres_films_attribues ", data_genres_films_attribues, "type ",
                   type(data_genres_films_attribues))
 
-            # Extrait les valeurs contenues dans la table "t_genres", colonne "intitule_genre"
+            # Extrait les valeurs contenues dans la table "t_genres", colonne "Nom_Prod"
             # Le composant javascript "tagify" pour afficher les tags n'a pas besoin de l'id_produit
-            lst_data_genres_films_non_attribues = [item['intitule_genre'] for item in data_genres_films_non_attribues]
+            lst_data_genres_films_non_attribues = [item['Nom_Prod'] for item in data_genres_films_non_attribues]
             print("lst_all_genres gf_edit_genre_film_selected ", lst_data_genres_films_non_attribues,
                   type(lst_data_genres_films_non_attribues))
 
@@ -219,11 +219,13 @@ def update_genre_film_selected():
 
             # SQL pour insérer une nouvelle association entre
             # "fk_film"/"id_film" et "fk_genre"/"id_produit" dans la "t_genre_film"
-            strsql_insert_genre_film = """INSERT INTO t_genre_film (id_genre_film, fk_genre, fk_film)
+            strsql_insert_genre_film = """INSERT INTO t_acheter_produit (ID_Acheter_Produit, FK_Produit, FK_CLient)
                                                     VALUES (NULL, %(value_fk_genre)s, %(value_fk_film)s)"""
 
-            # SQL pour effacer une (des) association(s) existantes entre "id_film" et "id_produit" dans la "t_genre_film"
-            strsql_delete_genre_film = """DELETE FROM t_genre_film WHERE fk_genre = %(value_fk_genre)s AND fk_film = %(value_fk_film)s"""
+            # SQL pour effacer une (des) association(s)
+            # existantes entre "id_film" et "id_produit" dans la "t_genre_film"
+            strsql_delete_genre_film = """DELETE FROM t_acheter_produit 
+                                        WHERE FK_Produit = %(value_fk_genre)s AND FK_Client = %(value_fk_film)s"""
 
             with DBconnection() as mconn_bd:
                 # Pour le film sélectionné, parcourir la liste des genres à INSÉRER dans la "t_genre_film".
@@ -274,20 +276,20 @@ def genres_films_afficher_data(valeur_id_film_selected_dict):
     print("valeur_id_film_selected_dict...", valeur_id_film_selected_dict)
     try:
 
-        strsql_film_selected = """SELECT id_film, nom_film, duree_film, description_film, cover_link_film, date_sortie_film, GROUP_CONCAT(id_produit) as GenresFilms FROM t_genre_film
-                                        INNER JOIN t_film ON t_film.id_film = t_genre_film.fk_film
-                                        INNER JOIN t_produit ON t_produit.id_produit = t_genre_film.fk_genre
-                                        WHERE id_film = %(value_id_film_selected)s"""
+        strsql_film_selected = """SELECT ID_Client, Nom_Client, Prenom_Client, Date_Inscription, GROUP_CONCAT(ID_Produit) as ProduitClient FROM t_acheter_produit
+                                        INNER JOIN t_client ON t_client.ID_Client = t_acheter_produit.FK_Client
+                                        INNER JOIN t_produit ON t_produit.ID_Produit = t_acheter_produit.FK_Produit
+                                        WHERE ID_Client = %(value_id_film_selected)s"""
 
-        strsql_genres_films_non_attribues = """SELECT id_produit, intitule_genre FROM t_produit WHERE id_produit not in(SELECT id_produit as idGenresFilms FROM t_genre_film
-                                                    INNER JOIN t_film ON t_film.id_film = t_genre_film.fk_film
-                                                    INNER JOIN t_produit ON t_produit.id_produit = t_genre_film.fk_genre
-                                                    WHERE id_film = %(value_id_film_selected)s)"""
+        strsql_genres_films_non_attribues = """SELECT ID_Produit, Nom_Prod, Date FROM t_produit WHERE ID_Produit not in(SELECT ID_Produit as idProduitClient FROM t_acheter_produit
+                                                            INNER JOIN t_client ON t_client.ID_Client = t_acheter_produit.FK_Client
+                                                            INNER JOIN t_produit ON t_produit.ID_Produit = t_acheter_produit.FK_Produit
+                                                            WHERE ID_Client = %(value_id_film_selected)s)"""
 
-        strsql_genres_films_attribues = """SELECT id_film, id_produit, intitule_genre FROM t_genre_film
-                                            INNER JOIN t_film ON t_film.id_film = t_genre_film.fk_film
-                                            INNER JOIN t_produit ON t_produit.id_produit = t_genre_film.fk_genre
-                                            WHERE id_film = %(value_id_film_selected)s"""
+        strsql_genres_films_attribues = """SELECT ID_Client, ID_Produit, Nom_Prod, Date_Inscription FROM t_acheter_produit
+                                                    INNER JOIN t_client ON t_client.ID_Client = t_acheter_produit.FK_Client
+                                                    INNER JOIN t_produit ON t_produit.ID_Produit = t_acheter_produit.FK_Produit
+                                                    WHERE ID_Client = %(value_id_film_selected)s"""
 
         # Du fait de l'utilisation des "context managers" on accède au curseur grâce au "with".
         with DBconnection() as mc_afficher:
