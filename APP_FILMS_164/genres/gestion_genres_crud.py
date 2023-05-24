@@ -61,7 +61,7 @@ def genres_afficher(order_by, id_genre_sel):
                 if not data_genres and id_genre_sel == 0:
                     flash("""La table "t_produit" est vide. !!""", "warning")
                 elif not data_genres and id_genre_sel > 0:
-                    # Si l'utilisateur change l'id_produit dans l'URL et que le genre n'existe pas,
+                    # Si l'utilisateur change l'ID_Produit dans l'URL et que le genre n'existe pas,
                     flash(f"Le genre demandé n'existe pas !!", "warning")
                 else:
                     # Dans tous les autres cas, c'est que la table "t_produit" est vide.
@@ -108,7 +108,7 @@ def genres_ajouter_wtf():
                 valeurs_insertion_dictionnaire = {"value_intitule_genre": name_produit}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
-                strsql_insert_genre = """INSERT INTO t_produit (id_produit,nom_prod) VALUES (NULL,%(value_intitule_genre)s) """
+                strsql_insert_genre = """INSERT INTO t_produit (ID_Produit,Nom_Prod) VALUES (NULL,%(value_intitule_genre)s) """
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_genre, valeurs_insertion_dictionnaire)
 
@@ -221,7 +221,7 @@ def genre_update_wtf():
 def genre_delete_wtf():
     data_films_attribue_genre_delete = None
     btn_submit_del = None
-    # L'utilisateur vient de cliquer sur le bouton "DELETE". Récupère la valeur de "id_produit"
+    # L'utilisateur vient de cliquer sur le bouton "DELETE". Récupère la valeur de "ID_Produit"
     id_genre_delete = request.values['id_genre_btn_delete_html']
 
     # Objet formulaire pour effacer le genre sélectionné.
@@ -249,7 +249,7 @@ def genre_delete_wtf():
                 print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
 
                 #str_sql_delete_films_genre = """DELETE FROM t_produit WHERE fk_genre = %(value_id_genre)s"""
-                str_sql_delete_idgenre = """DELETE FROM t_produit WHERE id_produit = %(value_id_genre)s"""
+                str_sql_delete_idgenre = """DELETE FROM t_produit WHERE ID_Produit = %(value_id_genre)s"""
                 # Manière brutale d'effacer d'abord la "fk_genre", même si elle n'existe pas dans la "t_genre_film"
                 # Ensuite on peut effacer le genre vu qu'il n'est plus "lié" (INNODB) dans la "t_genre_film"
                 with DBconnection() as mconn_bd:
@@ -278,8 +278,8 @@ def genre_delete_wtf():
                 # le formulaire "genres/genre_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
                 session['data_films_attribue_genre_delete'] = data_films_attribue_genre_delete
 
-                # Opération sur la BD pour récupérer "id_produit" et "intitule_genre" de la "t_produit"
-                str_sql_id_genre = "SELECT id_produit, Nom_Prod FROM t_produit WHERE id_produit = %(value_id_genre)s"
+                # Opération sur la BD pour récupérer "ID_Produit" et "intitule_genre" de la "t_produit"
+                str_sql_id_genre = "SELECT ID_Produit, Nom_Prod FROM t_produit WHERE ID_Produit = %(value_id_genre)s"
 
                 mydb_conn.execute(str_sql_id_genre, valeur_select_dictionnaire)
                 # Une seule valeur est suffisante "fetchone()",

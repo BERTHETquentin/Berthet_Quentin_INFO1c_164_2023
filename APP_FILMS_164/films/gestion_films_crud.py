@@ -36,11 +36,14 @@ def film_add_wtf():
         try:
             if form_add_film.validate_on_submit():
                 nom_film_add = form_add_film.nom_film_add_wtf.data
+                prenom_client_add = form_add_film.prenom_film_add_wtf.data
 
-                valeurs_insertion_dictionnaire = {"value_nom_film": nom_film_add}
+                valeurs_insertion_dictionnaire = {"value_nom_film": nom_film_add,
+                                                  "Value_prenom_client": prenom_client_add}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
-                strsql_insert_film = """INSERT INTO t_film (Nom_Prod,nom_film) VALUES (NULL,%(value_nom_film)s) """
+                strsql_insert_film = """INSERT INTO t_client (ID_Client,Nom_Client,Prenom_Client) 
+                                        VALUES (NULL,%(value_nom_film)s,%(Value_prenom_client)s) """
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_film, valeurs_insertion_dictionnaire)
 
@@ -178,7 +181,7 @@ def film_delete_wtf():
             valeur_delete_dictionnaire = {"value_id_film": id_film_delete}
             print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
 
-            str_sql_delete_fk_film_genre = """DELETE FROM t_genre_film WHERE fk_film = %(value_id_film)s"""
+            str_sql_delete_fk_film_genre = """DELETE  FROM t_client WHERE FK_Client = %(value_id_film)s"""
             str_sql_delete_film = """DELETE FROM t_client WHERE ID_Client = %(value_id_film)s"""
             # Manière brutale d'effacer d'abord la "fk_film", même si elle n'existe pas dans la "t_genre_film"
             # Ensuite on peut effacer le film vu qu'il n'est plus "lié" (INNODB) dans la "t_genre_film"

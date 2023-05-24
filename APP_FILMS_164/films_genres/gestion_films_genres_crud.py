@@ -91,7 +91,7 @@ def edit_genre_film_selected():
     if request.method == "GET":
         try:
             with DBconnection() as mc_afficher:
-                strsql_genres_afficher = """SELECT ID_Client, Nom_Client FROM t_client ORDER BY ID_Client ASC"""
+                strsql_genres_afficher = """SELECT * FROM t_client ORDER BY ID_Client ASC"""
                 mc_afficher.execute(strsql_genres_afficher)
             data_genres_all = mc_afficher.fetchall()
             print("dans edit_genre_film_selected ---> data_genres_all", data_genres_all)
@@ -144,7 +144,7 @@ def edit_genre_film_selected():
                   type(data_genres_films_attribues))
 
             # Extrait les valeurs contenues dans la table "t_genres", colonne "Nom_Prod"
-            # Le composant javascript "tagify" pour afficher les tags n'a pas besoin de l'id_produit
+            # Le composant javascript "tagify" pour afficher les tags n'a pas besoin de l'ID_Produit
             lst_data_genres_films_non_attribues = [item['Nom_Prod'] for item in data_genres_films_non_attribues]
             print("lst_all_genres gf_edit_genre_film_selected ", lst_data_genres_films_non_attribues,
                   type(lst_data_genres_films_non_attribues))
@@ -207,25 +207,23 @@ def update_genre_film_selected():
 
             # Pour apprécier la facilité de la vie en Python... "les ensembles en Python"
             # https://fr.wikibooks.org/wiki/Programmation_Python/Ensembles
-            # OM 2021.05.02 Une liste de "id_produit" qui doivent être effacés de la table intermédiaire "t_genre_film".
+            # OM 2021.05.02 Une liste de "id_genre" qui doivent être effacés de la table intermédiaire "t_genre_film".
             lst_diff_genres_delete_b = list(set(old_lst_data_genres_films_attribues) -
                                             set(new_lst_int_genre_film_old))
             print("lst_diff_genres_delete_b ", lst_diff_genres_delete_b)
 
-            # Une liste de "id_produit" qui doivent être ajoutés à la "t_genre_film"
+            # Une liste de "id_genre" qui doivent être ajoutés à la "t_genre_film"
             lst_diff_genres_insert_a = list(
                 set(new_lst_int_genre_film_old) - set(old_lst_data_genres_films_attribues))
             print("lst_diff_genres_insert_a ", lst_diff_genres_insert_a)
 
             # SQL pour insérer une nouvelle association entre
-            # "fk_film"/"id_film" et "fk_genre"/"id_produit" dans la "t_genre_film"
-            strsql_insert_genre_film = """INSERT INTO t_acheter_produit (ID_Acheter_Produit, FK_Produit, FK_CLient)
+            # "fk_film"/"id_film" et "fk_genre"/"id_genre" dans la "t_genre_film"
+            strsql_insert_genre_film = """INSERT INTO t_acheter_produit (ID_Acheter_Produit, FK_Produit, FK_Client)
                                                     VALUES (NULL, %(value_fk_genre)s, %(value_fk_film)s)"""
 
-            # SQL pour effacer une (des) association(s)
-            # existantes entre "id_film" et "id_produit" dans la "t_genre_film"
-            strsql_delete_genre_film = """DELETE FROM t_acheter_produit 
-                                        WHERE FK_Produit = %(value_fk_genre)s AND FK_Client = %(value_fk_film)s"""
+            # SQL pour effacer une (des) association(s) existantes entre "id_film" et "id_genre" dans la "t_genre_film"
+            strsql_delete_genre_film = """DELETE FROM t_acheter_produit WHERE FK_Produit = %(value_fk_genre)s AND FK_Client = %(value_fk_film)s"""
 
             with DBconnection() as mconn_bd:
                 # Pour le film sélectionné, parcourir la liste des genres à INSÉRER dans la "t_genre_film".
