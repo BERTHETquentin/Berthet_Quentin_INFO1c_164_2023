@@ -1,9 +1,12 @@
 # Module 164 2023.03.25
 
 
-Le "début de la fin"
+Mode d'emplois :
 
+premiere etape : télécharger une gestionnaire de base de donnée. Par exemple laragon : https://laragon.org/download/index.html
 
-Le mode d'emploi et vos devoirs se trouvent à l'adresse suivante.
+deuxieme etape : changer le dumb du projet INFO_1C_Berthet_Quentin par votre dumb. 
 
-https://info164.github.io/doc164ver1/index.html
+troisieme etape : lancer votre moteur de DB
+
+quatrieme etape : lancer le projet
